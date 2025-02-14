@@ -10,9 +10,9 @@ const supabase = createClient(
 
 export async function POST(req) {
   try {
-    const { cookie } = await req.json();
+    const { cookie, session_id } = await req.json();
 
-    console.log("Received cookie:", cookie);
+    console.log("Received cookie:", cookie, session_id);
 
     if (!cookie) {
       return NextResponse.json({ error: "No cookie provided" }, { status: 400 });
@@ -21,7 +21,7 @@ export async function POST(req) {
     // Store the cookie in the Supabase `auth0_cookies` table
     const { data, error } = await supabase
       .from("auth0_cookies")
-      .insert([{ value: cookie }]);
+      .insert([{ value: cookie, session_id: session_id }]);
 
     if (error) {
       console.error("Supabase insert error:", error);
