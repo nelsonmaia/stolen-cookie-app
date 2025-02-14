@@ -28,7 +28,14 @@ export async function POST(req) {
       return NextResponse.json({ error: "Failed to save cookie to database" }, { status: 500 });
     }
 
-    return NextResponse.json({ message: "Cookie saved successfully", data });
+    const response = NextResponse.json({ message: "Cookie saved", data });
+
+    // ✅ Allow localhost for testing
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+
+    return response;
   } catch (error) {
     console.error("Error saving cookie:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
