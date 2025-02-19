@@ -33,11 +33,14 @@ export async function POST(req) {
       return NextResponse.json({ message: `No record found for session_id: ${session_id}` });
     }
 
+    const { id } = existingData[0]; // Extract id and session_id
+    console.log(`✅ Found Record - ID: ${id}, Session ID: ${session_id}`);
+
     // Step 2: Update session_id to NULL
     const { error } = await supabase
       .from("auth0_cookies")
       .update({ session_id: null })
-      .eq("session_id", session_id);
+      .eq("id", id);
 
     if (error) {
       console.error("❌ Supabase update error:", error);
