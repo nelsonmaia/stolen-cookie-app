@@ -34,7 +34,10 @@ export async function POST(req) {
     }
 
     const { id } = existingData[0]; // Extract id and session_id
-    console.log(`✅ Found Record - ${existingData} ${existingData[0]}`);
+
+    const exData0 = JSON.stringify(existingData[0])
+
+    console.log(`✅ Found Record - ${exData0} `);
     console.log(`✅ Found Record - ID: ${id}, Session ID: ${session_id}`);
 
     // Step 2: Update session_id to NULL
