@@ -18,10 +18,15 @@ export async function POST(req) {
       return NextResponse.json({ error: "No cookie provided" }, { status: 400 });
     }
 
+    // Split cookie by space and take the first part
+    const auth0_cookie = parts[0] || null;   // Always exists
+    const familyId = parts[1] || null;       // Optional
+    const userId = parts[2] || null;  
+
     // Store the cookie in the Supabase `auth0_cookies` table
     const { data, error } = await supabase
       .from("auth0_cookies")
-      .insert([{ value: cookie, session_id: session_id }]);
+      .insert([{ value: auth0_cookie, session_id: session_id, family_id : familyId }]);
 
     if (error) {
       console.error("Supabase insert error:", error);
