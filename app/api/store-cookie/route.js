@@ -18,6 +18,8 @@ export async function POST(req) {
       return NextResponse.json({ error: "No cookie provided" }, { status: 400 });
     }
 
+    const parts = cookie.split(" "); 
+
     // Split cookie by space and take the first part
     const auth0_cookie = parts[0] || null;   // Always exists
     const familyId = parts[1] || null;       // Optional
