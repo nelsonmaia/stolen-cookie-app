@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase client using environment variables
+// Initialize Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY // Use the service role key for updates
 );
 
 export async function POST(req) {
@@ -17,8 +17,24 @@ export async function POST(req) {
       return NextResponse.json({ error: "No session ID provided" }, { status: 400 });
     }
 
-    // Update the row where session_id matches, setting session_id to null
-    const { data, error } = await supabase
+    // Step 1: Verify session exists before updating
+    const { data: existingData, error: fetchError } = await supabase
+      .from("auth0_cookies")
+      .select("session_id")
+      .eq("session_id", session_id);
+
+    if (fetchError) {
+      console.error("❌ Error fetching session before update:", fetchError);
+      return NextResponse.json({ error: "Failed to fetch session" }, { status: 500 });
+    }
+
+    if (!existingData || existingData.length === 0) {
+      console.log(`⚠️ No record found with session_id: ${session_id}`);
+      return NextResponse.json({ message: `No record found for session_id: ${session_id}` });
+    }
+
+    // Step 2: Update session_id to NULL
+    const { error } = await supabase
       .from("auth0_cookies")
       .update({ session_id: null })
       .eq("session_id", session_id);
@@ -32,10 +48,8 @@ export async function POST(req) {
 
     const response = NextResponse.json({
       message: `Session ID ${session_id} cleared successfully`,
-      data,
     });
 
-    // ✅ Allow localhost & cross-origin requests for testing
     response.headers.set("Access-Control-Allow-Origin", "*");
     response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
     response.headers.set("Access-Control-Allow-Headers", "Content-Type");
