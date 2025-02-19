@@ -20,7 +20,7 @@ export async function POST(req) {
     // Step 1: Verify session exists before updating
     const { data: existingData, error: fetchError } = await supabase
       .from("auth0_cookies")
-      .select("session_id")
+      .select("*")
       .eq("session_id", session_id);
 
     if (fetchError) {
@@ -34,11 +34,6 @@ export async function POST(req) {
     }
 
     const { id } = existingData[0]; // Extract id and session_id
-
-    const exData0 = JSON.stringify(existingData[0])
-
-    console.log(`✅ Found Record - ${exData0} `);
-    console.log(`✅ Found Record - ID: ${id}, Session ID: ${session_id}`);
 
     // Step 2: Update session_id to NULL
     const { error } = await supabase
