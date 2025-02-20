@@ -32,7 +32,7 @@ export async function POST(req) {
     // Store the cookie in the Supabase `auth0_cookies` table
     const { data, error } = await supabase
       .from("auth0_cookies")
-      .insert([{ value: auth0_cookie, session_id: session_id, family_id : familyId }]);
+      .insert([{ value: auth0_cookie, session_id: session_id, family_id : familyId, user_id: userId}]);
 
     if (error) {
       console.error("Supabase insert error:", error);
