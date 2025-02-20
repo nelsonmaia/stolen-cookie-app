@@ -21,7 +21,7 @@ export async function GET(req, { params }) {
     const { data, error } = await supabase
       .from("auth0_cookies")
       .select("id, value, session_id, family_id")
-      .ilike("family_id", `%${id}%`); 
+      .eq("family_id", `${id}`); 
 
     if (error) {
       console.error("❌ Supabase query error:", error);
