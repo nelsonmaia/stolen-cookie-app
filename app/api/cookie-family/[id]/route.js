@@ -11,20 +11,17 @@ export async function GET(req, { params }) {
   try {
     let { id } = params; // Correct way to extract the ID in App Router
 
-    console.log(`🔍 Searching for records with family_id: '${id}'`); 
+    console.log(`🔍 Searching for records with family_id wilcard: '${id}'`); 
 
     if (!id) {
       return NextResponse.json({ error: "No family ID provided" }, { status: 400 });
     }
-
-    // Ensure id is treated as a string and remove any extra spaces
     id = String(id).trim();
 
-    // Query the `auth0_cookies` table for the given `family_id`
     const { data, error } = await supabase
       .from("auth0_cookies")
       .select("id, value, session_id, family_id")
-      .ilike("family_id", id); // Allows case-insensitive matching
+      .ilike("family_id", `%${id}%`); 
 
     if (error) {
       console.error("❌ Supabase query error:", error);
