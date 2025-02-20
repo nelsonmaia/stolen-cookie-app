@@ -30,7 +30,13 @@ export async function GET(req, { params }) {
 
     if (!data || data.length === 0) {
       console.log(`❌ No records found for family_id: '${id}'`);
-      return NextResponse.json({ message: "No records found", family_id: id }, { status: 404 });
+
+      const { data, error } = await supabase.from("auth0_cookies").select("*");
+      console.log("All auth0_cookies:", data);
+
+
+
+      return NextResponse.json({ message: "No records found", family_id: id, data }, { status: 404 });
     }
 
     console.log(`✅ Found ${data.length} record(s) for family_id: '${id}'`);
